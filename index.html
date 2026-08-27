@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POS.KU — Point of Sale V.1.1 </title>
+<title>POS.KU — Point of Sale V.1.2 </title>
 <style>
 :root{
   --navy:#071A2E;--blue:#1F6FB2;--green:#2ECC71;--lime:#7ED957;
@@ -78,6 +78,55 @@ th,td{padding:11px 13px;border-bottom:1px solid var(--border);text-align:left;fo
 .error-banner{position:fixed;left:15px;right:15px;bottom:15px;z-index:999;background:#7f1d1d;color:#fff;padding:12px 15px;border-radius:10px;display:none;box-shadow:0 8px 25px #0004;font-size:13px}
 .error-banner.show{display:block}
 .print-preview{width:min(1000px,96vw);height:min(88vh,900px)}.print-preview-body{padding:0;background:#e2e8f0;height:calc(100% - 58px);overflow:auto}.print-preview-frame{width:100%;height:100%;border:0;background:#fff}.data-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.btn-outline{background:#fff;border:1px solid var(--border);color:#334155}.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+
+
+/* POS-KU v3 UI polish */
+.sidebar{
+  background:
+    radial-gradient(circle at 20% 0%,rgba(46,204,113,.16),transparent 30%),
+    linear-gradient(180deg,#06182b 0%,#0a2944 58%,#071d32 100%);
+  padding:16px 12px;
+}
+.brand{padding:8px 9px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+.logo{box-shadow:0 8px 22px rgba(46,204,113,.18)}
+.nav-title{padding:17px 12px 7px;color:#8fa8bf;font-weight:700}
+.nav button{
+  position:relative;display:flex;align-items:center;gap:8px;
+  border:1px solid transparent;padding:11px 12px;margin:3px 0;
+}
+.nav button span:first-child{flex:0 0 25px;text-align:center}
+.nav button:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.06);transform:translateX(2px)}
+.nav button.active{
+  background:linear-gradient(90deg,rgba(46,204,113,.18),rgba(31,111,178,.22));
+  border-color:rgba(126,217,87,.16);
+  box-shadow:inset 3px 0 0 var(--green);
+}
+.nav button.active:after{content:"";position:absolute;right:9px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+.sidebar-toggle{border:1px solid rgba(255,255,255,.08)}
+.report-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.export-menu{position:relative}
+.export-menu>summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;gap:7px;
+}
+.export-menu>summary::-webkit-details-marker{display:none}
+.export-menu[open]>summary{background:#eef6ff;color:var(--blue)}
+.export-menu .export-panel{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:30;width:250px;
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  box-shadow:0 15px 35px rgba(15,23,42,.14);padding:7px;
+}
+.export-panel button,.export-panel label{
+  width:100%;display:flex;align-items:center;gap:9px;text-align:left;
+  background:#fff;color:#334155;border-radius:9px;padding:10px 11px;margin:2px 0;
+  font-weight:600;font-size:13px;
+}
+.export-panel button:hover,.export-panel label:hover{background:#f1f5f9;color:var(--blue)}
+.receipt-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.receipt-preview-card{border:1px dashed var(--border);background:#f8fafc;border-radius:12px;padding:14px;margin-top:12px}
+@media(max-width:520px){
+  .receipt-options{grid-template-columns:1fr}
+  .export-menu .export-panel{position:fixed;left:15px;right:15px;top:auto;margin-top:4px;width:auto}
+}
 
 /* Google Sheets cloud sync */
 .cloud-status{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:12px;font-weight:700;border:1px solid #a7f3d0}.cloud-status.offline{background:#fff7ed;color:#c2410c;border-color:#fed7aa}.cloud-dot{width:8px;height:8px;border-radius:50%;background:#10b981}.cloud-status.offline .cloud-dot{background:#f59e0b}
@@ -167,6 +216,10 @@ th,td{padding:11px 13px;border-bottom:1px solid var(--border);text-align:left;fo
         <button class="pay-option active" id="payCash" onclick="setPayment('TUNAI')">💵 Tunai</button>
         <button class="pay-option" id="payQris" onclick="setPayment('QRIS')">▦ QRIS</button><button class="pay-option transfer" id="payTransfer" onclick="setPayment('TRANSFER')">🏦 Transfer</button>
       </div>
+      <div class="receipt-options">
+        <div class="field"><label>Nama Pelanggan</label><input class="input" id="customerName" maxlength="80" placeholder="Opsional"></div>
+        <div class="field"><label>Keterangan Tambahan</label><input class="input" id="saleNote" maxlength="180" placeholder="Contoh: Pesanan dibawa pulang"></div>
+      </div>
       <div id="cashBox"><input class="input" id="cashPaid" type="number" placeholder="Uang dibayar" oninput="renderCart()" style="width:100%"><div class="sumrow"><span>Kembalian</span><b id="change">Rp 0</b></div></div>
       <div id="qrisBox" style="display:none;text-align:center;padding:8px"><div style="font-size:48px">▦</div><small>Simulasi QRIS. Konfirmasi pembayaran untuk menyelesaikan transaksi.</small></div>
       <button class="btn btn-green" style="width:100%;padding:13px;margin-top:8px" onclick="processPayment()">BAYAR SEKARANG</button>
@@ -204,7 +257,20 @@ th,td{padding:11px 13px;border-bottom:1px solid var(--border);text-align:left;fo
 
 <section class="page" id="laporan">
   <div class="section-head"><div><h3>Laporan</h3><small style="color:#64748b">Ringkasan pemasukan dan pengeluaran</small></div><div class="toolbar no-print" style="margin:0"><button class="btn btn-outline" onclick="openReportPreview()">👁 Preview</button><button class="btn btn-primary" onclick="printReportDirect()">🖨 Cetak Langsung</button></div></div>
-  <div class="card" style="margin-bottom:15px"><div class="toolbar"><input class="input" type="date" id="reportStart"><input class="input" type="date" id="reportEnd"><select class="select" id="reportPayment"><option value="">Semua Pembayaran</option><option>TUNAI</option><option>QRIS</option><option>TRANSFER</option></select><select class="select" id="reportGroup"><option value="TRANSAKSI">Riwayat Transaksi</option><option value="PRODUK">By Produk</option><option value="KATEGORI">By Kategori</option><option value="PEMBAYARAN">By Pembayaran</option></select><button class="btn btn-primary" onclick="renderReports()">Tampilkan</button></div><div class="data-tools no-print"><button class="btn btn-outline btn-small" onclick="refreshCloud()">↻ Sinkronkan</button><button class="btn btn-outline btn-small" onclick="exportSalesCSV()">⬇ Transaksi CSV</button><button class="btn btn-outline btn-small" onclick="exportExpensesCSV()">⬇ Pengeluaran CSV</button><button class="btn btn-outline btn-small" onclick="exportProductsCSV()">⬇ Produk CSV</button><button class="btn btn-outline btn-small" onclick="exportCategoriesCSV()">⬇ Kategori CSV</button><button class="btn btn-outline btn-small" onclick="backupDatabase()">💾 Backup Database</button><label class="btn btn-outline btn-small" style="display:inline-flex;align-items:center;gap:5px">⬆ Restore Database<input type="file" id="restoreDbFile" accept=".json" onchange="restoreDatabase(event)" hidden></label></div></div>
+  <div class="card" style="margin-bottom:15px"><div class="toolbar"><input class="input" type="date" id="reportStart"><input class="input" type="date" id="reportEnd"><select class="select" id="reportPayment"><option value="">Semua Pembayaran</option><option>TUNAI</option><option>QRIS</option><option>TRANSFER</option></select><select class="select" id="reportGroup"><option value="TRANSAKSI">Riwayat Transaksi</option><option value="PRODUK">By Produk</option><option value="KATEGORI">By Kategori</option><option value="PEMBAYARAN">By Pembayaran</option></select><button class="btn btn-primary" onclick="renderReports()">Tampilkan</button></div><div class="data-tools no-print">
+  <button class="btn btn-outline btn-small" onclick="refreshCloud()">↻ Sinkronkan</button>
+  <details class="export-menu">
+    <summary class="btn btn-outline btn-small">⬇ Download Data ▾</summary>
+    <div class="export-panel">
+      <button type="button" onclick="exportSalesCSV();this.closest('details').removeAttribute('open')">🧾 Transaksi CSV</button>
+      <button type="button" onclick="exportExpensesCSV();this.closest('details').removeAttribute('open')">↘ Pengeluaran CSV</button>
+      <button type="button" onclick="exportProductsCSV();this.closest('details').removeAttribute('open')">📦 Produk CSV</button>
+      <button type="button" onclick="exportCategoriesCSV();this.closest('details').removeAttribute('open')">◈ Kategori CSV</button>
+      <button type="button" onclick="backupDatabase();this.closest('details').removeAttribute('open')">💾 Backup Database</button>
+      <label>⬆ Restore Database<input type="file" id="restoreDbFile" accept=".json" onchange="restoreDatabase(event);this.closest('details').removeAttribute('open')" hidden></label>
+    </div>
+  </details>
+</div></div>
   <div class="cards" style="grid-template-columns:repeat(4,1fr)">
     <div class="card"><small>Total Penjualan</small><h3 id="reportSales">Rp 0</h3></div>
     <div class="card"><small>Total Pengeluaran</small><h3 id="reportExpenses">Rp 0</h3></div>
@@ -252,11 +318,42 @@ th,td{padding:11px 13px;border-bottom:1px solid var(--border);text-align:left;fo
 <div class="modal" id="paymentModal"><div class="modal-box"><div class="modal-head"><h3>Transaksi Berhasil</h3><button onclick="closeModal('paymentModal')">✕</button></div><div class="modal-body" id="receipt"></div><div class="modal-foot"><button class="btn btn-light" onclick="closeModal('paymentModal')">Tutup</button><button class="btn btn-outline" onclick="openReceiptPreview()">👁 Preview Struk</button><button class="btn btn-primary" onclick="printReceiptDirect()">🖨 Cetak Langsung</button></div></div></div>
 <div class="modal" id="printPreviewModal"><div class="modal-box print-preview"><div class="modal-head"><h3 id="printPreviewTitle">Preview Cetak</h3><button onclick="closeModal('printPreviewModal')">✕</button></div><div class="print-preview-body"><iframe id="printPreviewFrame" class="print-preview-frame" title="Preview cetak"></iframe></div><div class="modal-foot no-print"><button class="btn btn-light" onclick="closeModal('printPreviewModal')">Tutup</button><button class="btn btn-primary" onclick="printFromPreview()">🖨 Cetak ke Printer</button></div></div></div>
 <!-- Setup Toko -->
-<div class="modal" id="storeModal"><div class="modal-box"><div class="modal-head"><h3>Pengaturan Toko</h3><button onclick="closeModal('storeModal')">✕</button></div><div class="modal-body"><div class="field"><label>Nama Toko *</label><input class="input" id="fStoreName" maxlength="80" placeholder="Nama toko Anda"></div><div class="store-preview" style="margin-top:12px"><b id="storePreviewName">POS-KU</b><br><small>Nama tampil pada semua dokumen cetak.</small></div></div><div class="modal-foot"><button class="btn btn-light" onclick="closeModal('storeModal')">Batal</button><button class="btn btn-primary" onclick="saveStoreSettings()">Simpan</button></div></div></div>
+<div class="modal" id="storeModal"><div class="modal-box"><div class="modal-head"><h3>Pengaturan Toko & Struk</h3><button onclick="closeModal('storeModal')">✕</button></div><div class="modal-body">
+<div class="form-grid">
+  <div class="field full"><label>Nama Toko *</label><input class="input" id="fStoreName" maxlength="80" placeholder="Nama toko Anda"></div>
+  <div class="field full"><label>Footer Struk</label><input class="input" id="fReceiptFooter" maxlength="120" placeholder="Contoh: Terima kasih telah berbelanja"></div>
+  <div class="field"><label>Tampilkan Nama Pelanggan</label><select class="select" id="fShowCustomer"><option value="1">Ya</option><option value="0">Tidak</option></select></div>
+  <div class="field"><label>Tampilkan Keterangan</label><select class="select" id="fShowNote"><option value="1">Ya</option><option value="0">Tidak</option></select></div>
+</div>
+<div class="store-preview" style="margin-top:12px"><b id="storePreviewName">POS-KU</b><br><small id="storePreviewFooter">Nama dan pengaturan ini digunakan pada dokumen cetak.</small></div>
+</div><div class="modal-foot"><button class="btn btn-light" onclick="closeModal('storeModal')">Batal</button><button class="btn btn-primary" onclick="saveStoreSettings()">Simpan Pengaturan</button></div></div></div>
 <!-- Edit Transaksi -->
-<div class="modal" id="saleEditModal"><div class="modal-box"><div class="modal-head"><h3>Edit Transaksi</h3><button onclick="closeModal('saleEditModal')">✕</button></div><div class="modal-body"><div class="form-grid"><div class="field"><label>No Transaksi</label><input class="input" id="editSaleNo" disabled></div><div class="field"><label>Tanggal</label><input class="input" id="editSaleDate" type="date"></div><div class="field"><label>Pembayaran</label><select class="select" id="editSalePayment"><option>TUNAI</option><option>QRIS</option><option>TRANSFER</option></select></div><div class="field"><label>Dibayar</label><input class="input" id="editSalePaid" type="number"></div><div class="field full"><label>Item Transaksi</label><div class="table-wrap"><table><thead><tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="editSaleItems"></tbody></table></div></div><div class="field full"><div class="sumrow total"><span>Total</span><b id="editSaleTotal">Rp 0</b></div></div></div></div><div class="modal-foot"><button class="btn btn-light" onclick="closeModal('saleEditModal')">Batal</button><button class="btn btn-primary" onclick="saveEditedSale()">Simpan Perubahan</button></div></div></div>
+<div class="modal" id="saleEditModal"><div class="modal-box"><div class="modal-head"><h3>Edit Transaksi</h3><button onclick="closeModal('saleEditModal')">✕</button></div><div class="modal-body"><div class="form-grid"><div class="field"><label>No Transaksi</label><input class="input" id="editSaleNo" disabled></div><div class="field"><label>Tanggal</label><input class="input" id="editSaleDate" type="date"></div><div class="field"><label>Pembayaran</label><select class="select" id="editSalePayment"><option>TUNAI</option><option>QRIS</option><option>TRANSFER</option></select></div><div class="field"><label>Nama Pelanggan</label><input class="input" id="editSaleCustomer" maxlength="80"></div><div class="field"><label>Dibayar</label><input class="input" id="editSalePaid" type="number"></div><div class="field full"><label>Keterangan Tambahan</label><input class="input" id="editSaleNote" maxlength="180"></div><div class="field full"><label>Item Transaksi</label><div class="table-wrap"><table><thead><tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="editSaleItems"></tbody></table></div></div><div class="field full"><div class="sumrow total"><span>Total</span><b id="editSaleTotal">Rp 0</b></div></div></div></div><div class="modal-foot"><button class="btn btn-light" onclick="closeModal('saleEditModal')">Batal</button><button class="btn btn-primary" onclick="saveEditedSale()">Simpan Perubahan</button></div></div></div>
 <div class="toast" id="toast"></div><div class="error-banner" id="errorBanner"></div>
 
+<script>
+// POS-KU timezone: Indonesia Western Time (WIB), Asia/Jakarta
+const POSKU_TIMEZONE = 'Asia/Jakarta';
+function poskuDateString(date=new Date()){
+  return new Intl.DateTimeFormat('en-CA',{
+    timeZone:POSKU_TIMEZONE,year:'numeric',month:'2-digit',day:'2-digit'
+  }).format(date);
+}
+function poskuTimeString(date=new Date()){
+  return new Intl.DateTimeFormat('id-ID',{
+    timeZone:POSKU_TIMEZONE,hour:'2-digit',minute:'2-digit',second:'2-digit',
+    hour12:false
+  }).format(date);
+}
+function poskuDateTimeString(date=new Date()){
+  return new Intl.DateTimeFormat('id-ID',{
+    timeZone:POSKU_TIMEZONE,year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+  }).format(date);
+}
+
+function today(){return poskuDateString(new Date())}
+</script>
 <script>
 const state={
  products:[
@@ -391,8 +488,37 @@ function loadSidebarPreference(){
 }
 
 function getStoreName(){try{return localStorage.getItem('posku_store_name')||'POS-KU'}catch(e){return 'POS-KU'}}
-function openStoreModal(){const n=getStoreName();document.getElementById('fStoreName').value=n;document.getElementById('storePreviewName').textContent=n;openModal('storeModal');document.getElementById('fStoreName').oninput=e=>document.getElementById('storePreviewName').textContent=e.target.value||'POS-KU'}
-function saveStoreSettings(){const n=document.getElementById('fStoreName').value.trim()||'POS-KU';try{localStorage.setItem('posku_store_name',n)}catch(e){}document.getElementById('settingsStoreName').textContent=n;closeModal('storeModal');toast('Nama toko disimpan')}
+function getReceiptSettings(){
+  try{return {
+    footer:localStorage.getItem('posku_receipt_footer')||'Terima kasih telah berbelanja',
+    showCustomer:localStorage.getItem('posku_receipt_customer')!=='0',
+    showNote:localStorage.getItem('posku_receipt_note')!=='0'
+  }}catch(e){return {footer:'Terima kasih telah berbelanja',showCustomer:true,showNote:true}}
+}
+function openStoreModal(){
+  const n=getStoreName(),s=getReceiptSettings();
+  document.getElementById('fStoreName').value=n;
+  document.getElementById('fReceiptFooter').value=s.footer;
+  document.getElementById('fShowCustomer').value=s.showCustomer?'1':'0';
+  document.getElementById('fShowNote').value=s.showNote?'1':'0';
+  document.getElementById('storePreviewName').textContent=n;
+  document.getElementById('storePreviewFooter').textContent=s.footer||'Footer struk';
+  openModal('storeModal');
+  document.getElementById('fStoreName').oninput=e=>document.getElementById('storePreviewName').textContent=e.target.value||'POS-KU';
+  document.getElementById('fReceiptFooter').oninput=e=>document.getElementById('storePreviewFooter').textContent=e.target.value||'Footer struk';
+}
+function saveStoreSettings(){
+  const n=document.getElementById('fStoreName').value.trim()||'POS-KU';
+  const footer=document.getElementById('fReceiptFooter').value.trim()||'Terima kasih telah berbelanja';
+  try{
+    localStorage.setItem('posku_store_name',n);
+    localStorage.setItem('posku_receipt_footer',footer);
+    localStorage.setItem('posku_receipt_customer',document.getElementById('fShowCustomer').value);
+    localStorage.setItem('posku_receipt_note',document.getElementById('fShowNote').value);
+  }catch(e){}
+  document.getElementById('settingsStoreName').textContent=n;
+  closeModal('storeModal');toast('Pengaturan toko dan struk disimpan');
+}
 function initStoreSettings(){document.getElementById('settingsStoreName').textContent=getStoreName()}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
@@ -435,20 +561,20 @@ function processPayment(){
  if(!state.cart.length)return toast('Keranjang masih kosong');
  const total=cartTotal(),paid=Number(document.getElementById('cashPaid').value||0);
  if(state.payment==='TUNAI'&&paid<total)return toast('Uang pembayaran tidak mencukupi');
- const saleDraft={date:today(),total,payment:state.payment,paid:state.payment==='TUNAI'?paid:0,items:state.cart.map(c=>{const p=state.products.find(x=>x.id===c.id);return {id:c.id,qty:c.qty,price:p.sell,name:p.name,unit:p.unit}})};
+ const saleDraft={date:today(),total,payment:state.payment,paid:state.payment==='TUNAI'?paid:0,time:poskuTimeString(new Date()),customerName:(document.getElementById('customerName')?.value||'').trim(),note:(document.getElementById('saleNote')?.value||'').trim(),items:state.cart.map(c=>{const p=state.products.find(x=>x.id===c.id);return {id:c.id,qty:c.qty,price:p.sell,name:p.name,unit:p.unit}})};
  const finish=sale=>{
    state.sales.unshift(sale);
    state._lastSale=sale;
    state.cart.forEach(c=>{const p=state.products.find(x=>x.id===c.id);if(p)p.stock-=c.qty});
    window._lastPaid=paid;
-   document.getElementById('receipt').innerHTML=`<div style="text-align:center"><div style="font-size:38px">✓</div><h3 style="margin:5px">Pembayaran Berhasil</h3><p>${sale.no}</p></div><hr><div class="sumrow"><span>Total</span><b>${rupiah(sale.total)}</b></div><div class="sumrow"><span>Pembayaran</span><b>${sale.payment}</b></div>${sale.payment==='TUNAI'?`<div class="sumrow"><span>Dibayar</span><b>${rupiah(sale.paid||paid)}</b></div><div class="sumrow"><span>Kembalian</span><b>${rupiah(Math.max(0,(sale.paid||paid)-sale.total))}</b></div>`:''}<hr><div>${sale.items.map(c=>`<div class="sumrow"><span>${esc(c.name||'Produk')} × ${c.qty}</span><b>${rupiah((c.price||0)*c.qty)}</b></div>`).join('')}</div>`;
-   state.cart=[];document.getElementById('cashPaid').value='';document.getElementById('discount').value=0;renderCart();renderAll();openModal('paymentModal');toast('Transaksi tersimpan ke Google Sheets');
+   document.getElementById('receipt').innerHTML=`<div style="text-align:center"><div style="font-size:38px">✓</div><h3 style="margin:5px">Pembayaran Berhasil</h3><p>${sale.no}</p></div><hr><div class="sumrow"><span>Total</span><b>${rupiah(sale.total)}</b></div><div class="sumrow"><span>Pembayaran</span><b>${sale.payment}</b></div>${sale.customerName?`<div class="sumrow"><span>Pelanggan</span><b>${esc(sale.customerName)}</b></div>`:''}${sale.note?`<div class="sumrow"><span>Keterangan</span><span style="text-align:right;max-width:60%">${esc(sale.note)}</span></div>`:''}${sale.payment==='TUNAI'?`<div class="sumrow"><span>Dibayar</span><b>${rupiah(sale.paid||paid)}</b></div><div class="sumrow"><span>Kembalian</span><b>${rupiah(Math.max(0,(sale.paid||paid)-sale.total))}</b></div>`:''}<hr><div>${sale.items.map(c=>`<div class="sumrow"><span>${esc(c.name||'Produk')} × ${c.qty}</span><b>${rupiah((c.price||0)*c.qty)}</b></div>`).join('')}</div>`;
+   state.cart=[];document.getElementById('cashPaid').value='';document.getElementById('discount').value=0;document.getElementById('customerName').value='';document.getElementById('saleNote').value='';renderCart();renderAll();openModal('paymentModal');toast('Transaksi tersimpan ke Google Sheets');
  };
  if(isCloudApp()){
    cloudCall('processSale',[saleDraft],finish,e=>toast('Transaksi gagal: '+(e.message||e)));
  }else{
    const no='POS-'+today().replace(/-/g,'')+'-'+String(state.sales.length+1).padStart(4,'0');
-   finish({id:'PJ'+Date.now(),no,date:today(),total,payment:state.payment,paid:paid,items:saleDraft.items});
+   finish({id:'PJ'+Date.now(),no,date:today(),time:poskuTimeString(new Date()),total,payment:state.payment,paid:paid,customerName:saleDraft.customerName,note:saleDraft.note,items:saleDraft.items});
  }
 }
 function buildPrintDocument(title, html, type='report', autoPrint=false){
@@ -503,15 +629,22 @@ function buildReportPrintHTML(){
   <hr><div class="row"><span>Total Penjualan</span><b>${rupiah(st)}</b></div><div class="row"><span>Total Pengeluaran</span><b>${rupiah(et)}</b></div><div class="row total"><span>Pendapatan Bersih</span><b>${rupiah(st-et)}</b></div>
   <h3 style="margin-top:22px">${groupTitle} (${sales.length})</h3><table><thead><tr>${groupHead}</tr></thead><tbody>${groupRows}</tbody></table>
   <h3 style="margin-top:22px">Pengeluaran (${ex.length})</h3><table><thead><tr><th>No</th><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th>Nominal</th><th>Pembayaran</th></tr></thead><tbody>${rowsEx}</tbody></table>
-  <div class="footer">Dicetak dari ${esc(getStoreName())} • ${new Date().toLocaleString('id-ID')}</div>`;
+  <div class="footer">Dicetak dari ${esc(getStoreName())} • ${poskuDateTimeString(new Date())}</div>`;
 }
 function openReportPreview(){openPrintPreview('Laporan '+getStoreName(),buildReportPrintHTML(),'report')}
 function printReportDirect(){openPrintWindow('Laporan '+getStoreName(),buildReportPrintHTML(),'report')}
 function buildReceiptHTML(){
   const sale=state._lastSale||state.sales[0];if(!sale)return '';
-  const items=(sale.items||[]).map(c=>{const p=state.products.find(x=>x.id===c.id);return p?`<div class="row"><span>${esc(p.name)} × ${c.qty}</span><b>${rupiah(p.sell*c.qty)}</b></div>`:''}).join('');
-  const paidText=sale.payment==='TUNAI'?`<div class="row"><span>Dibayar</span><b>${rupiah(window._lastPaid||sale.total)}</b></div><div class="row"><span>Kembalian</span><b>${rupiah(Math.max(0,(window._lastPaid||sale.total)-sale.total))}</b></div>`:'';
-  return `<div class="center"><div class="brand">${esc(getStoreName())}</div><div class="sub">Point of Sale</div><div class="sub">${esc(sale.no)}</div><div class="sub">${esc(sale.date)}</div></div><hr>${items}<hr><div class="row total"><span>TOTAL</span><span>${rupiah(sale.total)}</span></div><div class="row"><span>Pembayaran</span><b>${esc(sale.payment)}</b></div>${paidText}<div class="footer">Terima kasih telah berbelanja di ${esc(getStoreName())}</div>`;
+  const rs=getReceiptSettings();
+  const items=(sale.items||[]).map(c=>{
+    const p=state.products.find(x=>x.id===c.id);
+    const name=c.name||p?.name||'Produk', price=Number(c.price||p?.sell||0);
+    return `<div class="row"><span>${esc(name)} × ${Number(c.qty)||0}</span><b>${rupiah(price*(Number(c.qty)||0))}</b></div>`;
+  }).join('');
+  const customer=rs.showCustomer&&sale.customerName?`<div class="row"><span>Pelanggan</span><b>${esc(sale.customerName)}</b></div>`:'';
+  const note=rs.showNote&&sale.note?`<div style="margin:8px 0;font-size:11px"><b>Keterangan:</b><br>${esc(sale.note)}</div>`:'';
+  const paidText=sale.payment==='TUNAI'?`<div class="row"><span>Dibayar</span><b>${rupiah(sale.paid||window._lastPaid||sale.total)}</b></div><div class="row"><span>Kembalian</span><b>${rupiah(Math.max(0,(sale.paid||window._lastPaid||sale.total)-sale.total))}</b></div>`:'';
+  return `<div class="center"><div class="brand">${esc(getStoreName())}</div><div class="sub">Point of Sale</div><div class="sub">${esc(sale.no)}</div><div class="sub">${esc(sale.date)} WIB</div><div class="sub">${esc(sale.time||poskuTimeString(new Date()))}</div></div><hr>${customer}${note}${items}<hr><div class="row total"><span>TOTAL</span><span>${rupiah(sale.total)}</span></div><div class="row"><span>Pembayaran</span><b>${esc(sale.payment)}</b></div>${paidText}<div class="footer">${esc(rs.footer)}</div>`;
 }
 function openReceiptPreview(){const sale=state._lastSale||state.sales[0];if(!sale)return toast('Data struk tidak tersedia.');openPrintPreview('Struk '+sale.no,buildReceiptHTML(),'receipt')}
 function printReceiptDirect(){const sale=state._lastSale||state.sales[0];if(!sale)return toast('Data struk tidak tersedia.');openPrintWindow('Struk '+sale.no,buildReceiptHTML(),'receipt')}
@@ -521,8 +654,8 @@ function downloadFile(filename,content,mime='text/csv;charset=utf-8'){
   const blob=new Blob(['\ufeff'+content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500)
 }
 function exportSalesCSV(){
-  const rows=[['ID','No Transaksi','Tanggal','Total','Pembayaran','Jumlah Item']];
-  state.sales.forEach(x=>rows.push([x.id,x.no,x.date,x.total,x.payment,(x.items||[]).reduce((s,i)=>s+i.qty,0)]));
+  const rows=[['ID','No Transaksi','Tanggal','Pelanggan','Keterangan','Total','Pembayaran','Jumlah Item']];
+  state.sales.forEach(x=>rows.push([x.id,x.no,x.date,x.customerName||'',x.note||'',x.total,x.payment,(x.items||[]).reduce((s,i)=>s+i.qty,0)]));
   downloadFile('POS-KU-Transaksi.csv',rows.map(r=>r.map(csvCell).join(',')).join('\r\n'));toast('Transaksi berhasil diekspor ke CSV')
 }
 function exportExpensesCSV(){
@@ -624,8 +757,8 @@ function renderReports(){
  document.getElementById('reportSales').textContent=rupiah(st);document.getElementById('reportExpenses').textContent=rupiah(et);document.getElementById('reportNet').textContent=rupiah(st-et);document.getElementById('reportCount').textContent=sales.length;
  const head=document.querySelector('#reportSalesTable')?.closest('table')?.querySelector('thead'),body=document.getElementById('reportSalesTable');
  if(group==='TRANSAKSI'){
-  head.innerHTML='<tr><th>No</th><th>Tanggal</th><th>Total</th><th>Pembayaran</th><th>Aksi</th></tr>';
-  body.innerHTML=sales.map(x=>`<tr><td>${esc(x.no)}</td><td>${esc(x.date)}</td><td>${rupiah(x.total)}</td><td><span class="badge ${x.payment==='QRIS'?'badge-blue':x.payment==='TRANSFER'?'badge-amber':'badge-green'}">${esc(x.payment)}</span></td><td><div class="history-actions"><button class="btn btn-light btn-small" onclick="editSale('${x.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteSale('${x.id}')">Hapus</button></div></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Tidak ada data.</td></tr>';
+  head.innerHTML='<tr><th>No</th><th>Tanggal</th><th>Pelanggan</th><th>Total</th><th>Pembayaran</th><th>Aksi</th></tr>';
+  body.innerHTML=sales.map(x=>`<tr><td>${esc(x.no)}</td><td>${esc(x.date)}</td><td>${esc(x.customerName||'Umum')}</td><td>${rupiah(x.total)}</td><td><span class="badge ${x.payment==='QRIS'?'badge-blue':x.payment==='TRANSFER'?'badge-amber':'badge-green'}">${esc(x.payment)}</span></td><td><div class="history-actions"><button class="btn btn-light btn-small" onclick="editSale('${x.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteSale('${x.id}')">Hapus</button></div></td></tr>`).join('')||'<tr><td colspan="6" class="empty">Tidak ada data.</td></tr>';
  }else{
   head.innerHTML='<tr><th>'+ (group==='PRODUK'?'Produk':group==='KATEGORI'?'Kategori':'Pembayaran') +'</th><th>'+ (group==='PEMBAYARAN'?'Transaksi':'Qty') +'</th><th>Penjualan</th></tr>';
   const m={};
@@ -641,7 +774,7 @@ let editingSaleId=null;
 function recalcSale(sale){sale.items=(sale.items||[]).filter(i=>Number(i.qty)>0);sale.total=sale.items.reduce((a,i)=>a+Number(i.price||0)*Number(i.qty||0),0);return sale}
 function editSale(id){
  const sale=state.sales.find(x=>x.id===id);if(!sale)return;editingSaleId=id;
- document.getElementById('editSaleNo').value=sale.no||'';document.getElementById('editSaleDate').value=sale.date||today();document.getElementById('editSalePayment').value=sale.payment||'TUNAI';document.getElementById('editSalePaid').value=sale.paid||sale.total||0;
+ document.getElementById('editSaleNo').value=sale.no||'';document.getElementById('editSaleDate').value=sale.date||today();document.getElementById('editSalePayment').value=sale.payment||'TUNAI';document.getElementById('editSaleCustomer').value=sale.customerName||'';document.getElementById('editSaleNote').value=sale.note||'';document.getElementById('editSalePaid').value=sale.paid||sale.total||0;
  document.getElementById('editSaleItems').innerHTML=(sale.items||[]).map((i,idx)=>{const p=state.products.find(x=>x.id===i.id);const price=Number(i.price||p?.sell||0);return `<tr><td>${esc(i.name||p?.name||'Produk')}</td><td>${rupiah(price)}</td><td><input class="input edit-sale-qty" data-index="${idx}" type="number" min="0" value="${Number(i.qty)||0}" style="width:75px" oninput="renderEditSaleTotal()"></td><td class="edit-sale-sub" data-index="${idx}">${rupiah(price*Number(i.qty||0))}</td><td><button class="btn btn-danger btn-small" onclick="removeEditSaleItem(${idx})">×</button></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Tidak ada item.</td></tr>';
  renderEditSaleTotal();openModal('saleEditModal');
 }
@@ -656,7 +789,7 @@ function saveEditedSale(){
  if(invalid){oldItems.forEach(i=>{const p=state.products.find(x=>x.id===i.id);if(p)p.stock-=Number(i.qty||0)});return toast('Qty melebihi stok yang tersedia')}
  if(!newItems.length){oldItems.forEach(i=>{const p=state.products.find(x=>x.id===i.id);if(p)p.stock-=Number(i.qty||0)});return toast('Transaksi harus memiliki minimal 1 item')}
  newItems.forEach(i=>{const p=state.products.find(x=>x.id===i.id);if(p)p.stock-=i.qty});
- sale.items=newItems;sale.date=document.getElementById('editSaleDate').value||sale.date;sale.payment=document.getElementById('editSalePayment').value;sale.paid=sale.payment==='TUNAI'?Number(document.getElementById('editSalePaid').value||0):0;recalcSale(sale);
+ sale.items=newItems;sale.date=document.getElementById('editSaleDate').value||sale.date;sale.payment=document.getElementById('editSalePayment').value;sale.customerName=(document.getElementById('editSaleCustomer').value||'').trim();sale.note=(document.getElementById('editSaleNote').value||'').trim();sale.paid=sale.payment==='TUNAI'?Number(document.getElementById('editSalePaid').value||0):0;recalcSale(sale);
  if(sale.payment==='TUNAI'&&sale.paid<sale.total){newItems.forEach(i=>{const p=state.products.find(x=>x.id===i.id);if(p)p.stock+=i.qty});sale.items=oldItems;oldItems.forEach(i=>{const p=state.products.find(x=>x.id===i.id);if(p)p.stock-=Number(i.qty||0)});return toast('Uang dibayar tidak mencukupi')}
  persistWholeDatabase(()=>{closeModal('saleEditModal');renderAll();toast('Transaksi berhasil diperbarui')},e=>toast('Gagal menyimpan perubahan: '+(e.message||e)))
 }
