@@ -296,7 +296,7 @@ function showPage(id){
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar()});
 window.addEventListener('resize',()=>{if(innerWidth>800)closeSidebar()});
-const POSKU_API_URL = 'https://script.google.com/macros/s/AKfycbx8NrJczlIJ_3EC6ttp9_-A6pdXsKjqRYKnLu-1TeJwJ_FHNOEDJKHJaiGcrZkkQrP13Q/exec';
+const POSKU_API_URL = 'https://script.google.com/macros/s/AKfycbzYhSE75n9-vJ0j6Oz67MqgH16AqxVKvL44HM47QaTa_YJcXqAa97tnzKRnB5NzbC9x/exec';
 let cloudReady=false;
 let syncTimer=null;
 function isCloudApp(){return /^https:\/\/script\.google\.com\/macros\/s\/[^\s]+\/exec$/i.test(POSKU_API_URL);}
